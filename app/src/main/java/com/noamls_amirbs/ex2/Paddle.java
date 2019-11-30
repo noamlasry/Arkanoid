@@ -1,29 +1,16 @@
 package com.noamls_amirbs.ex2;
 
-import android.content.Context;
-import android.util.AttributeSet;
-
-import androidx.annotation.Nullable;
-
 public class Paddle
 {
-
     protected float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
-    boolean leftMovePaddle = false,rightMovePaddle = false,stop = false;
-    float canW,canH,xUp = 0,xDown = 0,paddleSpeed = (float) 20,paddleSize;
 
 
-    public Paddle(float canW, float canH)
+    public Paddle(float leftUpCornerX, float leftUpCornerY, float rightDownCornerX, float rightDownCornerY)
     {
-        this.canW = canW;
-        this.canH = canH;
-
-        this.paddleSize = canW/6;
-
-        this.leftUpCornerX = canW/2 - 150;
-        this.leftUpCornerY = canH - 80;
-        this.rightDownCornerX = this.leftUpCornerX+this.paddleSize;
-        this.rightDownCornerY = canH - 60;
+        this.leftUpCornerX = leftUpCornerX;
+        this.leftUpCornerY = leftUpCornerY;
+        this.rightDownCornerX = rightDownCornerX;
+        this.rightDownCornerY = rightDownCornerY;
     }
 
     public void setLeftUpCornerX(float leftUpCornerX){this.leftUpCornerX = leftUpCornerX;}
@@ -35,6 +22,4 @@ public class Paddle
     public float getLeftUpCornerY(){return this.leftUpCornerY;}
     public float getRightDownCornerX(){return this.rightDownCornerX;}
     public float getRightDownCornerY(){return this.rightDownCornerY;}
-
-
 }
