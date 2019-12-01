@@ -16,7 +16,7 @@ public class BrickCollection
 
 
     int canW,canH;
-    final int ROW = 5,COL = 7,INTEVAL = 3;
+     final int ROW = 5,COL = 7,INTEVAL = 3;
     float startPositionX = 0,startPositionY = 200,endPositionX = 256,endPositionY = 240;
     final int SIZE_X = 256, SIZE_Y = 40;
 
@@ -31,6 +31,7 @@ public class BrickCollection
         this.canH = canH;
 
 
+        endPositionX = canW/7;
         bricks = new Brick[ROW][COL];
         for(int i = 0; i<ROW; i++)
         {

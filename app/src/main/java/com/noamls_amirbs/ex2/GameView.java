@@ -17,6 +17,7 @@ public class GameView extends View
 
     Context context;
     AttributeSet attrs;
+    Boolean leftMovePaddle = false,rightMovePaddle = false,stop = false;
     final int ROW = 5,COL = 7;
     float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
     private Paint pen;
@@ -24,6 +25,9 @@ public class GameView extends View
     Paddle paddle = null;
     BrickCollection br = null;
     Ball ball = null;
+    float xUp = 0,xDown = 0;
+    final float paddleSpeed = (float) 3.5;
+
 
     public GameView(Context context, @Nullable AttributeSet attrs)
     {
@@ -34,6 +38,7 @@ public class GameView extends View
         pen.setStyle(Paint.Style.FILL);
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
+
 
     }
 
@@ -48,12 +53,14 @@ public class GameView extends View
         paddle = new Paddle(canvasW,canvasH);
         ball = new Ball(canvasW,canvasH);
 
+
         canvas.drawText("Score: 0",50,100,pen);
         canvas.drawText("Lives: 0",canvasW - 200,100,pen);
 
+        Log.d("width","width/brick"+canvasW/256);
 
         pen.setColor(Color.GREEN);
-        for(int i = 0; i<ROW; i++)
+        for(int i = 0; i<ROW; i++)//draw bricks
         {
             for(int j = 0; j<COL; j++)
             {
@@ -70,12 +77,35 @@ public class GameView extends View
             }
         }
 
-        pen.setColor(Color.BLUE);
-        canvas.drawRect(paddle.leftUpCornerX,paddle.leftUpCornerY,paddle.rightDownCornerX,paddle.rightDownCornerY,pen);
+        pen.setColor(Color.BLUE);//draw Paddle
+        canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 
-        pen.setColor(Color.WHITE);
+        pen.setColor(Color.WHITE);// draw ball
         canvas.drawCircle(ball.x,ball.y,ball.radius,pen);
 
+
+
+        float paddleSize = paddle.getRightDownCornerX() - paddle.getLeftUpCornerX();
+        if(leftMovePaddle && paddle.rightDownCornerX + xDown < canvasW)
+        {
+            if(!stop)
+            {
+                xUp += paddleSpeed;
+                xDown += paddleSpeed;
+            }
+
+        }
+        else if(rightMovePaddle && paddle.leftUpCornerX + xUp > 0)
+        {
+            if(!stop)
+            {
+                xUp -= paddleSpeed;
+                xDown -= paddleSpeed;
+            }
+
+        }
+
+        invalidate();
 
     }
     @Override
@@ -87,6 +117,31 @@ public class GameView extends View
         canvasH = h;
 
 
+    }
+    public void movePaddle(int val)
+    {
+        if(val == 0)
+        {
+            stop = false;
+            rightMovePaddle = false;
+            leftMovePaddle = true;
+        }
+
+        else if(val == 1)
+        {
+            stop = false;
+            leftMovePaddle = false;
+            rightMovePaddle = true;
+        }
+        else if(val == 2)
+        {
+            Log.d("t","stop!");
+            //leftMovePaddle = false;
+           // rightMovePaddle = false;
+            stop = true;
+        }
+
+        invalidate(); // call onDraw()
     }
 
 }
