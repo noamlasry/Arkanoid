@@ -63,28 +63,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event)
     {
-        float input = round(event.values[1],2);
+        float input = round(event.values[1],2);// two digit after the point
 
-        Log.d("t","x: "+ input);
-        if(input < X)
+        if(input < X-0.5)
         {
             Log.d("t","down from 9.81 ");
 
             gameView.movePaddle(0);
         }
 
-        else if(input > X)
+        else if(input > X+0.5)
         {
             Log.d("t","up from 9.81 ");
            gameView.movePaddle(1);
         }
-        else if(input == X)
+        else if(input >= X-0.5 && input <= X+0.5)
        {
             gameView.movePaddle(2);
         }
 
     }
-    public static float round(float d, int decimalPlace) {
+    public static float round(float d, int decimalPlace)
+    {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.floatValue();

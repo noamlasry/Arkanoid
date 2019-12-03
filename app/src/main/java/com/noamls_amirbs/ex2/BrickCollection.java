@@ -15,23 +15,25 @@ public class BrickCollection
 {
 
 
-    int canW,canH;
+    float canW,canH;
      final int ROW = 5,COL = 7,INTEVAL = 3;
-    float startPositionX = 0,startPositionY = 200,endPositionX = 256,endPositionY = 240;
-    final int SIZE_X = 256, SIZE_Y = 40;
+    float startPositionX = 0,startPositionY = 200,endPositionX,endPositionY = 240;
+    float SIZE_X, SIZE_Y = 40;
 
     Brick bricks[][] = null;
 
 
 
-    public BrickCollection(int canW, int canH)
+    public BrickCollection(float canW, float canH)
     {
 
         this.canW = canW;
         this.canH = canH;
 
 
-        endPositionX = canW/7;
+        endPositionX = canW/7; // to set the bricks board suitable for any type of device.
+        SIZE_X = canW/7;
+
         bricks = new Brick[ROW][COL];
         for(int i = 0; i<ROW; i++)
         {
@@ -54,7 +56,7 @@ public class BrickCollection
 
             }
             startPositionX = 0;
-            endPositionX = 256;
+            endPositionX = SIZE_X;
             startPositionY += (SIZE_Y + INTEVAL);
             endPositionY += (SIZE_Y + INTEVAL);
 

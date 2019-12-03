@@ -3,9 +3,9 @@ package com.noamls_amirbs.ex2;
 public class Ball
 {
     protected float x,y,radius;
-    int canW,canH;
+    float canW,canH;
 
-    public Ball(int canW, int canH)
+    public Ball(float canW, float canH)
     {
         this.canW = canW;
         this.canH = canH;

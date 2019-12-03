@@ -3,9 +3,9 @@ package com.noamls_amirbs.ex2;
 public class Paddle
 {
     protected float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
-    int canW,canH;
+    float canW,canH;
 
-    public Paddle(int canW, int canH)
+    public Paddle(float canW, float canH)
     {
         this.canW = canW;
         this.canH = canH;
