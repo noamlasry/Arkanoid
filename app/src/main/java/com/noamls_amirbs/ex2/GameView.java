@@ -76,7 +76,7 @@ public class GameView extends View
         canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 // =============================================================================================================================================//// ================== make the ball move ========================================================//
       ball.bouncingBall(canvas,canMove,ballInposition);
-/*
+
     if(canMove )// the player click to start the game
         {
 
@@ -95,7 +95,7 @@ public class GameView extends View
 
 
         }
-*/
+
         // ===================   make the paddle move by the motion sensor  ============================//
 
 // ==================================================================================================//
