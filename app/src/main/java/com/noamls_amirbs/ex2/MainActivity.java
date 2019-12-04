@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mySensor;
     private SensorManager SM;
     final float X = (float) 0;
+    Paddle paddle = null;
 
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //===============================================================================//
 
-
     }
 
 
@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         else if(input > X+0.5)
         {
-            Log.d("t","up from 9.81 ");
-           gameView.movePaddle(1);
+            Log.d("tom","up from 9.81 ");
+            gameView.movePaddle(1);
         }
         else if(input >= X-0.5 && input <= X+0.5)
-       {
+        {
             gameView.movePaddle(2);
         }
 
