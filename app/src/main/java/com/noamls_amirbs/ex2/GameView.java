@@ -30,8 +30,14 @@ public class GameView extends View
     Ball ball = null;
     float xUp = 0,xDown = 0,screenX,screenY,temp;
     final float paddleSpeed = (float) 20,ballSpeed = (float) 2.5;
-    int plusX = 0, plusY = 0;
-    int sign = -1;
+    int plusX = 0, plusY = 0,x,y,SIGN;
+    int signX = -1,signY = -1;
+    //=========== give the ball random deriction in the first time ===========================================//
+
+
+
+//========================================================================================================//
+
 
 
     public GameView(Context context, @Nullable AttributeSet attrs)
@@ -41,6 +47,17 @@ public class GameView extends View
         pen.setStyle(Paint.Style.FILL);
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
+
+        Random rand = new Random();
+        x = rand.nextInt(10);
+        y = rand.nextInt(6);
+        SIGN = rand.nextInt(3);
+        if(SIGN == 0)
+            signX = 1;
+        else if(SIGN == 1)
+            signX = -1;
+        else if(SIGN == 2)
+           signX = 0;
     }
 
 
@@ -81,36 +98,40 @@ public class GameView extends View
     if(canMove )// the player click to start the game
         {
 
-                moveBall(sign,canvas);
+                moveBall(canvas);
+
                 if(ball.getY() == 200.0)
                 {
                     Toast.makeText(getContext(), "hit up",
                             Toast.LENGTH_LONG).show();
-                    sign = 1;
+                    signY = 1;
                     invalidate();
                 }
                 if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown)
                {
                     Toast.makeText(getContext(), "hit down",
                             Toast.LENGTH_LONG).show();
-                    sign = -1;
+                   signY = -1;
                    invalidate();
                }
+
+
 
         }
         // ===================   make the paddle move by the motion sensor  ============================//
 // ==================================================================================================//
         invalidate();
     }
-    public void moveBall(int sign,Canvas canvas)
+    public void moveBall(Canvas canvas)
     {
+
         pen.setColor(Color.WHITE);// draw ball
-       // plusX += 5;
-        plusY += 5*sign;
+        plusX += 5*signX;
+        plusY += 5*signY;
 
         ball.setY(ball.getY()+plusY);
-        Log.d("moveBall","ball.getY() :"+ball.getY());
-        Log.d("moveBall","plusY :"+plusY);
+        ball.setX(ball.getX()+plusX);
+
 
         canvas.drawCircle(ball.x,ball.y,ball.radius,pen);
         invalidate();
