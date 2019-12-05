@@ -20,7 +20,7 @@ public class GameView extends View
     private float ballcx = 0, ballcy = 0;
     boolean leftMovePaddle = false,rightMovePaddle = false,stop = false,screenTouch = false, canMove = false,ballInposition = true;
     Boolean hitRightCeiling = false, hitLeftCelling = false, hitDownLeftWall = false, hitUpLeftWall = false;
-    Boolean  hitDownRightWall = false,hitUpRightWall = false,startGame = true;
+    Boolean  hitDownRightWall = false,hitUpWall = false,hitUpRightWall = false,startGame = true;
     final int ROW = 5,COL = 7;
 
     private Paint pen;
@@ -28,10 +28,10 @@ public class GameView extends View
     Paddle paddle = null;
     BrickCollection bricks = null;
     Ball ball = null;
-    float xUp = 0,xDown = 0,screenX,screenY;
+    float xUp = 0,xDown = 0,screenX,screenY,temp;
     final float paddleSpeed = (float) 20,ballSpeed = (float) 2.5;
     int plusX = 0, plusY = 0;
-    int count = 1;
+    int sign = -1;
 
 
     public GameView(Context context, @Nullable AttributeSet attrs)
@@ -64,6 +64,7 @@ public class GameView extends View
         bricks = new BrickCollection(canvasW,canvasH);
         paddle = new Paddle(canvasW,canvasH);
         ball = new Ball(canvasW,canvasH);
+        temp = paddle.leftUpCornerX;
 // =================================================//
 // ========= draw the bricks  ==================== //
         bricks.drawBricks(canvas);
@@ -75,34 +76,45 @@ public class GameView extends View
         pen.setColor(Color.BLUE);//draw Paddle
         canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 // =============================================================================================================================================//// ================== make the ball move ========================================================//
-      ball.bouncingBall(canvas,canMove,ballInposition);
+   //   ball.bouncingBall(canvas,canMove,ballInposition);
 
     if(canMove )// the player click to start the game
         {
 
-
-            count++;
-            ballInposition = false;
-            int sign = -1;
-
-            plusX += 5;
-            plusY -= 5;
-
-            ball.setY(ball.getY()+plusY);
-            pen.setColor(Color.WHITE);// draw ball
-            canvas.drawCircle(ball.x,ball.y,ball.radius,pen);
-
-
+                moveBall(sign,canvas);
+                if(ball.getY() == 200.0)
+                {
+                    Toast.makeText(getContext(), "hit up",
+                            Toast.LENGTH_LONG).show();
+                    sign = 1;
+                    invalidate();
+                }
+                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown)
+               {
+                    Toast.makeText(getContext(), "hit down",
+                            Toast.LENGTH_LONG).show();
+                    sign = -1;
+                   invalidate();
+               }
 
         }
-
         // ===================   make the paddle move by the motion sensor  ============================//
-
 // ==================================================================================================//
         invalidate();
-
     }
+    public void moveBall(int sign,Canvas canvas)
+    {
+        pen.setColor(Color.WHITE);// draw ball
+       // plusX += 5;
+        plusY += 5*sign;
 
+        ball.setY(ball.getY()+plusY);
+        Log.d("moveBall","ball.getY() :"+ball.getY());
+        Log.d("moveBall","plusY :"+plusY);
+
+        canvas.drawCircle(ball.x,ball.y,ball.radius,pen);
+        invalidate();
+    }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
@@ -153,13 +165,7 @@ public class GameView extends View
 
     }
 
-    public void moveBall()
-    {
-        Random rnd = new Random();
-        ballcx = (float)rnd.nextInt(5);
-        ballcy = ballcx;
-        invalidate(); // call onDraw()
-    }
+
     public boolean onTouchEvent(MotionEvent event)
     {
 
