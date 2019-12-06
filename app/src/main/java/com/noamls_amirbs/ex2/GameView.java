@@ -30,7 +30,7 @@ public class GameView extends View
     BrickCollection bricks = null;
     Ball ball = null;
     float xUp = 0,xDown = 0,screenX,screenY,temp;
-    final float paddleSpeed = (float) 20,ballSpeed = (float) 2.5;
+    final float paddleSpeed = (float) 10,ballSpeed = (float) 2.5;
     int plusX = 0, plusY = 0,x,y,SIGN;
     int signX = -1,signY = -1;
     private Handler handler;
@@ -44,6 +44,7 @@ public class GameView extends View
 
     public GameView(Context context, @Nullable AttributeSet attrs)
     {
+
         super(context, attrs);
         pen = new Paint();
         pen.setStyle(Paint.Style.FILL);
@@ -66,7 +67,7 @@ public class GameView extends View
 
 
     @Override
-    protected void onDraw(Canvas canvas)
+    protected void onDraw(final Canvas canvas)
     {
         super.onDraw(canvas);
         canvas.drawColor(Color.GRAY);
@@ -101,7 +102,7 @@ public class GameView extends View
 
     if(canMove )// the player click to start the game
         {
-
+                movePaddle();
                 moveBall(canvas);
 
                 if(ball.getY() == 200.0)
@@ -111,16 +112,32 @@ public class GameView extends View
                     signY = 1;
                     invalidate();
                 }
-
-                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown)
+               // ========== hit the left side of the paddle ========== //
+                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown - ((paddle.paddleSize/2) - 50) )
                {
-                    Toast.makeText(getContext(), "hit down",
+                    Toast.makeText(getContext(), "hit left side of the paddle",
                             Toast.LENGTH_LONG).show();
                    signY = -1;
+                   signX = -1;
                    invalidate();
                }
-
-
+            // ========== hit the right side of the paddle ========== //
+               if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+(paddle.paddleSize/2) +50 && ball.getX() < paddle.rightDownCornerX+xDown)
+               {
+                   Toast.makeText(getContext(), "hit right side of the paddle",
+                          Toast.LENGTH_LONG).show();
+                   signY = -1;
+                   signX = 1;
+                   invalidate();
+               }
+            // ========== hit the middle side of the paddle ========== //
+                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
+                {
+                    Toast.makeText(getContext(), "hit middle paddle",
+                          Toast.LENGTH_LONG).show();
+                    signY = -1;
+                    invalidate();
+                }
 
                 if(ball.getX() < 3.0)
                 {
@@ -141,6 +158,28 @@ public class GameView extends View
         // ===================   make the paddle move by the motion sensor  ============================//
 // ==================================================================================================//
         invalidate();
+    }
+
+    public void movePaddle()
+    {
+        if(leftMovePaddle && paddle.leftUpCornerX + xDown > 0)
+        {
+            if(!stop && canMove)
+            {
+                xUp -= paddleSpeed;
+                xDown -= paddleSpeed;
+            }
+
+        }
+        else if(rightMovePaddle && paddle.rightDownCornerX + xUp < canvasW)
+        {
+            if(!stop && canMove)
+            {
+                xUp += paddleSpeed;
+                xDown += paddleSpeed;
+            }
+
+        }
     }
     public void moveBall(Canvas canvas)
     {
@@ -168,24 +207,6 @@ public class GameView extends View
 
     public void movePaddle(int val)
     {
-        if(leftMovePaddle && paddle.leftUpCornerX + xDown > 0)
-        {
-            if(!stop && canMove)
-            {
-                xUp -= paddleSpeed;
-                xDown -= paddleSpeed;
-            }
-
-        }
-        else if(rightMovePaddle && paddle.rightDownCornerX + xUp < canvasW)
-        {
-            if(!stop && canMove)
-            {
-                xUp += paddleSpeed;
-                xDown += paddleSpeed;
-            }
-
-        }
 
         if(val == 0)
         {
@@ -216,5 +237,6 @@ public class GameView extends View
         screenY = event.getY();
         return true;
     }
+
 
 }
