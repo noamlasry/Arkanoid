@@ -1,19 +1,28 @@
 package com.noamls_amirbs.ex2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.Random;
 
 public class GameView extends View
@@ -34,6 +43,7 @@ public class GameView extends View
     int plusX = 0, plusY = 0,x,y,SIGN;
     int signX = -1,signY = -1;
     private Handler handler;
+    private GameView gameView;
     //=========== give the ball random deriction in the first time ===========================================//
 
 
@@ -51,7 +61,7 @@ public class GameView extends View
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
         handler = new Handler();
-
+        this.setDrawingCacheEnabled(true);
         Random rand = new Random();
         x = rand.nextInt(10);
         y = rand.nextInt(6);
@@ -66,13 +76,18 @@ public class GameView extends View
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onDraw(final Canvas canvas)
     {
         super.onDraw(canvas);
         canvas.drawColor(Color.GRAY);
+        Bitmap bitmap;
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
+        gameView = findViewById(R.id.myViewID);
+        bitmap = this.getDrawingCache(true);
+
 
         canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);// first draw on the canvas
         if(screenTouch)// once the player touch the screen the game will began.
@@ -105,7 +120,9 @@ public class GameView extends View
                 movePaddle();
                 moveBall(canvas);
 
-                if(ball.getY() == 200.0)
+                
+
+            if(ball.getY() == 200.0)
                {
                     Toast.makeText(getContext(), "hit up",
                             Toast.LENGTH_LONG).show();
@@ -237,6 +254,7 @@ public class GameView extends View
         screenY = event.getY();
         return true;
     }
+
 
 
 }
