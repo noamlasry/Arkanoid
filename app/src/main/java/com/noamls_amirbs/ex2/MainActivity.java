@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager SM;
     final float X = (float) 0;
     Paddle paddle = null;
+    private Handler handler;
 
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Register sensor Listener
         SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-
+        handler = new Handler();
 
 // ===============  screen definition =============================================================//
         // set FULL SCREEN - need to hide Status & Action Bar
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(input < X-0.5)
         {
             Log.d("t","down from 9.81 ");
+
 
             gameView.movePaddle(0);
         }

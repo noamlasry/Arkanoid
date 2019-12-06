@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class GameView extends View
     final float paddleSpeed = (float) 20,ballSpeed = (float) 2.5;
     int plusX = 0, plusY = 0,x,y,SIGN;
     int signX = -1,signY = -1;
+    private Handler handler;
     //=========== give the ball random deriction in the first time ===========================================//
 
 
@@ -47,6 +49,7 @@ public class GameView extends View
         pen.setStyle(Paint.Style.FILL);
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
+        handler = new Handler();
 
         Random rand = new Random();
         x = rand.nextInt(10);
@@ -58,6 +61,7 @@ public class GameView extends View
             signX = -1;
         else if(SIGN == 2)
            signX = 0;
+
     }
 
 
@@ -101,18 +105,34 @@ public class GameView extends View
                 moveBall(canvas);
 
                 if(ball.getY() == 200.0)
-                {
+               {
                     Toast.makeText(getContext(), "hit up",
                             Toast.LENGTH_LONG).show();
                     signY = 1;
                     invalidate();
                 }
+
                 if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown)
                {
                     Toast.makeText(getContext(), "hit down",
                             Toast.LENGTH_LONG).show();
                    signY = -1;
                    invalidate();
+               }
+
+
+
+                if(ball.getX() < 3.0)
+                {
+                    Toast.makeText(getContext(), "hit left wall",
+                            Toast.LENGTH_LONG).show();
+                    signX *= -1;
+                }
+               if(ball.getX() > canvasW - 3)
+               {
+                  Toast.makeText(getContext(), "hit right wall",
+                        Toast.LENGTH_LONG).show();
+                  signX *= -1;
                }
 
 
@@ -145,6 +165,7 @@ public class GameView extends View
         canvasH = h;
 
     }
+
     public void movePaddle(int val)
     {
         if(leftMovePaddle && paddle.leftUpCornerX + xDown > 0)
