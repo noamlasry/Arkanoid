@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class Ball
 {
-    float x,y,radius,canW,canH;
+    float x,y,radius,canW,canH,ballFirstPositionX,ballFirstPositionY;
     int plusX = 0, plusY = 0;
     Paint pen = null;
 
@@ -19,6 +19,8 @@ public class Ball
         this.canW = canW;
         this.canH = canH;
 
+        this.ballFirstPositionX = canW/2;
+        this.ballFirstPositionY = canH/2;
         this.x = canW/2;
         this.y = canH - 95;
         this.radius = 15;
@@ -47,22 +49,5 @@ public class Ball
         }
 
     }
-    public void bouncingBall(Canvas canvas, boolean canMove, boolean ballInposition )
-    {
-        if(canMove )// the player click to start the game
-        {
 
-            ballInposition = false;
-            plusX += 5;
-            plusY -= 5;
-
-            y += 500;
-            Log.d("here","not here: "+this.getY());
-            pen.setColor(Color.WHITE);// draw ball
-            canvas.drawCircle(x,y,radius,pen);
-        }
-
-
-
-    }
 }

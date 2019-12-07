@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mySensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         // Register sensor Listener
-        SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         handler = new Handler();
 
@@ -61,28 +60,64 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-
     @Override
     public void onSensorChanged(SensorEvent event)
     {
         float input = round(event.values[1],2);// two digit after the point
 
+        Log.d("t","down from 9.81 ");
+
         if(input < X-0.5)
         {
             Log.d("t","down from 9.81 ");
 
+            new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        public void run() {
+                            gameView.movePaddle(0);
+                        }
+                    });
+                }
+            }).start();
 
-            gameView.movePaddle(0);
         }
 
         else if(input > X+0.5)
         {
             Log.d("tom","up from 9.81 ");
-            gameView.movePaddle(1);
+            new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        public void run() {
+                            gameView.movePaddle(1);
+                        }
+                    });
+                }
+            }).start();
+
         }
         else if(input >= X-0.5 && input <= X+0.5)
         {
-            gameView.movePaddle(2);
+            new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        public void run() {
+                            gameView.movePaddle(2);
+                        }
+                    });
+                }
+            }).start();
+
         }
 
     }
@@ -97,4 +132,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+    protected void onResume()
+    {
+        super.onResume();
+        SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+    }
+    protected void onPause()
+    {
+        super.onPause();
+        SM.unregisterListener(this);
+    }
+
 }

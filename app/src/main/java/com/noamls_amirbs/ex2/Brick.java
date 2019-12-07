@@ -11,17 +11,17 @@ public class Brick
     boolean brickAlive = true;
     Paint pen = null;
 
-public Brick()
-{
-    this.brickSize = 240;
-    this.leftUpCornerX = 0;
-    this.leftUpCornerY = 0;
-    this.rightDownCornerX = 0;
-    this.rightDownCornerY = 0;
-    pen = new Paint();
-    pen.setColor(Color.GRAY);
+    public Brick()
+    {
+        this.brickSize = 240;
+        this.leftUpCornerX = 0;
+        this.leftUpCornerY = 0;
+        this.rightDownCornerX = 0;
+        this.rightDownCornerY = 0;
+        pen = new Paint();
+        pen.setColor(Color.GRAY);
 
-}
+    }
 
     public void setLeftUpCornerX(float leftUpCornerX){this.leftUpCornerX = leftUpCornerX;}
     public void setLeftUpCornerY(float leftUpCornerY){this.leftUpCornerY = leftUpCornerY;}

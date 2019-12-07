@@ -27,12 +27,10 @@ import java.util.Random;
 
 public class GameView extends View
 {
-    private float ballcx = 0, ballcy = 0;
+    float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
     boolean leftMovePaddle = false,rightMovePaddle = false,stop = false,screenTouch = false, canMove = false,ballInposition = true;
-    Boolean hitRightCeiling = false, hitLeftCelling = false, hitDownLeftWall = false, hitUpLeftWall = false;
-    Boolean  hitDownRightWall = false,hitUpWall = false,hitUpRightWall = false,startGame = true;
+    boolean beforeMoveBall = false;
     final int ROW = 5,COL = 7;
-
     private Paint pen;
     protected float canvasW, canvasH;
     Paddle paddle = null;
@@ -44,15 +42,7 @@ public class GameView extends View
     int plusX = 0, plusY = 0,x,y,SIGN;
     int signX = -1,signY = -1;
     private Handler handler;
-    private GameView gameView;
-
-
-    //=========== give the ball random deriction in the first time ===========================================//
-
-
-
-//========================================================================================================//
-
+    boolean boolArray[][] = new boolean[ROW][COL];
 
 
     public GameView(Context context, @Nullable AttributeSet attrs)
@@ -74,7 +64,7 @@ public class GameView extends View
         else if(SIGN == 1)
             signX = -1;
         else if(SIGN == 2)
-           signX = 0;
+            signX = 0;
 
     }
 
@@ -87,7 +77,7 @@ public class GameView extends View
         canvas.drawColor(Color.GRAY);
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
-        gameView = findViewById(R.id.myViewID);
+
 
 
         canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);// first draw on the canvas
@@ -110,72 +100,85 @@ public class GameView extends View
 
 // =================================================//
 // ========= draw the bricks  ==================== //
-        bricks.drawBricks(canvas);
+        drawBricks(canvas);
 // ===============================================//
 // ======== draw the ball =======================//
-        ball.drawBall(canvas,ballInposition);
+
+            pen.setColor(Color.WHITE);
+            canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
+
+        beforeMoveBall = true;
+       // ball.drawBall(canvas,ballInposition);
+      //  ballInposition = false;
 // =============================================//
 // ======== draw the paddle and active according the sensor ==================================================================================//
         pen.setColor(Color.BLUE);//draw Paddle
         canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 // =============================================================================================================================================//// ================== make the ball move ========================================================//
 
-    if(canMove )// the player click to start the game
+        if(canMove )// the player click to start the game
         {
-                movePaddle();
-                moveBall(canvas);
+            pen.setColor(Color.GRAY);
+            canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
 
-            if(bricks.hitTheBrick(ball.getX(),ball.getY(),canvas))
+            movePaddle();
+            moveBall(canvas);
+
+
+
+
+
+            if(hitTheBrick(ball.getX(),ball.getY(),canvas))
             {
                 signY *= -1;
 
             }
             if(ball.getY() == 200.0)
-               {
-                    Toast.makeText(getContext(), "hit up",
-                            Toast.LENGTH_LONG).show();
-                    signY = 1;
-                    invalidate();
-                }
-               // ========== hit the left side of the paddle ========== //
-                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown - ((paddle.paddleSize/2) - 50) )
-               {
-                    Toast.makeText(getContext(), "hit left side of the paddle",
-                            Toast.LENGTH_LONG).show();
-                   signY = -1;
-                   signX = -1;
-                   invalidate();
-               }
-            // ========== hit the right side of the paddle ========== //
-               if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+(paddle.paddleSize/2) +50 && ball.getX() < paddle.rightDownCornerX+xDown)
-               {
-                   Toast.makeText(getContext(), "hit right side of the paddle",
-                          Toast.LENGTH_LONG).show();
-                   signY = -1;
-                   signX = 1;
-                   invalidate();
-               }
-            // ========== hit the middle side of the paddle ========== //
-                if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
-                {
-                    Toast.makeText(getContext(), "hit middle paddle",
-                          Toast.LENGTH_LONG).show();
-                    signY = -1;
-                    invalidate();
-                }
-
-                if(ball.getX() < 3.0)
-                {
-                    Toast.makeText(getContext(), "hit left wall",
-                            Toast.LENGTH_LONG).show();
-                    signX *= -1;
-                }
-               if(ball.getX() > canvasW - 3)
-               {
-                  Toast.makeText(getContext(), "hit right wall",
+            {
+                Toast.makeText(getContext(), "hit up",
                         Toast.LENGTH_LONG).show();
-                  signX *= -1;
-               }
+                signY = 1;
+                invalidate();
+            }
+            // ========== hit the left side of the paddle ========== //
+            if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown - ((paddle.paddleSize/2) - 50) )
+            {
+                Toast.makeText(getContext(), "hit left side of the paddle",
+                        Toast.LENGTH_LONG).show();
+                signY = -1;
+                signX = -1;
+                invalidate();
+            }
+            // ========== hit the right side of the paddle ========== //
+            if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+(paddle.paddleSize/2) +50 && ball.getX() < paddle.rightDownCornerX+xDown)
+            {
+                Toast.makeText(getContext(), "hit right side of the paddle",
+                        Toast.LENGTH_LONG).show();
+                signY = -1;
+                signX = 1;
+                invalidate();
+            }
+            // ========== hit the middle side of the paddle ========== //
+            if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
+            {
+                Toast.makeText(getContext(), "hit middle paddle",
+                        Toast.LENGTH_LONG).show();
+                signY = -1;
+                invalidate();
+            }
+
+            if(ball.getX() < 3.0)
+            {
+                Toast.makeText(getContext(), "hit left wall",
+                        Toast.LENGTH_LONG).show();
+                signX *= -1;
+            }
+            if(ball.getX() > canvasW - 3)
+            {
+                Toast.makeText(getContext(), "hit right wall",
+                        Toast.LENGTH_LONG).show();
+                signX *= -1;
+            }
 
 
 
@@ -263,5 +266,58 @@ public class GameView extends View
         return true;
     }
 
+    public void drawBricks(Canvas canvas)
+    {
+        pen.setColor(Color.GREEN);
 
+        pen.setTextSize(50);
+        canvas.drawText("Score: 0",50,100,pen);
+        canvas.drawText("Lives: 0",canvasW - 200,100,pen);
+
+        for(int i = 0; i<ROW; i++)//draw bricks
+        {
+            for(int j = 0; j<COL; j++)
+            {
+                leftUpCornerX = bricks.bricks[i][j].leftUpCornerX;
+                leftUpCornerY = bricks.bricks[i][j].leftUpCornerY;
+                rightDownCornerX = bricks.bricks[i][j].rightDownCornerX;
+                rightDownCornerY = bricks.bricks[i][j].rightDownCornerY;
+                if(boolArray[i][j] == true)
+                    pen.setColor(Color.GRAY);
+                else
+                    pen.setColor(Color.GREEN);
+                canvas.drawRect(leftUpCornerX , leftUpCornerY , rightDownCornerX ,rightDownCornerY , pen);
+            }
+        }
+
+    }
+    public boolean hitTheBrick(float x , float y, Canvas canvas )
+    {
+
+        for(int i = 0; i<ROW; i++)//draw bricks
+        {
+            for(int j = 0; j<COL; j++)
+            {
+                leftUpCornerX = bricks.bricks[i][j].leftUpCornerX;
+                leftUpCornerY = bricks.bricks[i][j].leftUpCornerY;
+                rightDownCornerX = bricks.bricks[i][j].rightDownCornerX;
+                rightDownCornerY = bricks.bricks[i][j].rightDownCornerY;
+
+                if(x > leftUpCornerX && x < rightDownCornerX && y > leftUpCornerY && y < rightDownCornerY && boolArray[i][j] == false)
+                {
+                    Log.v("hit","hit brick i:"+i+"j: "+j);
+
+                    boolArray[i][j] = true;
+                    pen.setColor(Color.GRAY);
+                    canvas.drawRect(leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY,pen);
+                    return true;
+
+                }
+
+            }
+        }
+
+        return false;
+
+    }
 }

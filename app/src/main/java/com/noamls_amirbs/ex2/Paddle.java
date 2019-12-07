@@ -10,7 +10,7 @@ public class Paddle
 
     protected float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
     boolean leftMovePaddle = false,rightMovePaddle = false,stop = false;
-    float canW,canH,xUp = 0,xDown = 0,paddleSpeed = (float) 20;
+    float canW,canH,xUp = 0,xDown = 0,paddleSpeed = (float) 20,paddleSize;
 
 
     public Paddle(float canW, float canH)
@@ -18,9 +18,11 @@ public class Paddle
         this.canW = canW;
         this.canH = canH;
 
+        this.paddleSize = canW/6;
+
         this.leftUpCornerX = canW/2 - 150;
         this.leftUpCornerY = canH - 80;
-        this.rightDownCornerX = canW/2 + 150;
+        this.rightDownCornerX = this.leftUpCornerX+this.paddleSize;
         this.rightDownCornerY = canH - 60;
     }
 

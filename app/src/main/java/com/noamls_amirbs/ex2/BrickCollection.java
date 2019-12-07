@@ -19,9 +19,9 @@ public class BrickCollection
 
 
     float canW,canH;
-     final int ROW = 5,COL = 7,INTEVAL = 3;
+    final int ROW = 5,COL = 7,INTEVAL = 3;
     float startPositionX = 0,startPositionY = 200,endPositionX,endPositionY = 240;
-    float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
+
     float SIZE_X, SIZE_Y = 40;
     private Paint pen;
 
@@ -44,7 +44,7 @@ public class BrickCollection
         {
             for(int j = 0; j<COL; j++)
             {
-              bricks[i][j] = new Brick();
+                bricks[i][j] = new Brick();
 
                 bricks[i][j] = new Brick();
                 float a = bricks[i][j].leftUpCornerY;
@@ -71,60 +71,7 @@ public class BrickCollection
     public float getCanW() { return this.canW; }
     public float getCanH() {return this.canH; }
 
-    public void drawBricks(Canvas canvas)
-    {
-        pen.setColor(Color.GREEN);
 
-        pen.setTextSize(50);
-        canvas.drawText("Score: 0",50,100,pen);
-        canvas.drawText("Lives: 0",canW - 200,100,pen);
-
-        for(int i = 0; i<ROW; i++)//draw bricks
-        {
-            for(int j = 0; j<COL; j++)
-            {
-                leftUpCornerX = bricks[i][j].leftUpCornerX;
-                leftUpCornerY = bricks[i][j].leftUpCornerY;
-                rightDownCornerX = bricks[i][j].rightDownCornerX;
-                rightDownCornerY = bricks[i][j].rightDownCornerY;
-                if(bricks[i][j].brickAlive == false)
-                    pen.setColor(Color.GRAY);
-                else
-                    pen.setColor(Color.GREEN);
-                canvas.drawRect(leftUpCornerX , leftUpCornerY , rightDownCornerX ,rightDownCornerY , pen);
-            }
-        }
-
-    }
-    public boolean hitTheBrick(float x , float y, Canvas canvas )
-    {
-
-        for(int i = 0; i<ROW; i++)//draw bricks
-        {
-            for(int j = 0; j<COL; j++)
-            {
-                leftUpCornerX = bricks[i][j].leftUpCornerX;
-                leftUpCornerY = bricks[i][j].leftUpCornerY;
-                rightDownCornerX = bricks[i][j].rightDownCornerX;
-                rightDownCornerY = bricks[i][j].rightDownCornerY;
-
-                if(x > leftUpCornerX && x < rightDownCornerX && y > leftUpCornerY && y < rightDownCornerY )
-                {
-                    Log.v("hit","hit brick i:"+i+"j: "+j);
-
-                    bricks[i][j].brickAlive = false;
-                    pen.setColor(Color.GRAY);
-                    canvas.drawRect(leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY,pen);
-                    return true;
-
-                }
-
-            }
-        }
-
-        return false;
-
-    }
 
 
 }
