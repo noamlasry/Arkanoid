@@ -38,12 +38,15 @@ public class GameView extends View
     Paddle paddle = null;
     BrickCollection bricks = null;
     Ball ball = null;
-    float xUp = 0,xDown = 0,screenX,screenY,temp;
+    Brick brick = null;
+    float xUp = 0,xDown = 0,screenX,screenY;
     final float paddleSpeed = (float) 10,ballSpeed = (float) 2.5;
     int plusX = 0, plusY = 0,x,y,SIGN;
     int signX = -1,signY = -1;
     private Handler handler;
     private GameView gameView;
+
+
     //=========== give the ball random deriction in the first time ===========================================//
 
 
@@ -61,7 +64,7 @@ public class GameView extends View
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
         handler = new Handler();
-        this.setDrawingCacheEnabled(true);
+
         Random rand = new Random();
         x = rand.nextInt(10);
         y = rand.nextInt(6);
@@ -78,15 +81,13 @@ public class GameView extends View
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
-    protected void onDraw(final Canvas canvas)
+    protected void onDraw( Canvas canvas)
     {
         super.onDraw(canvas);
         canvas.drawColor(Color.GRAY);
-        Bitmap bitmap;
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
         gameView = findViewById(R.id.myViewID);
-        bitmap = this.getDrawingCache(true);
 
 
         canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);// first draw on the canvas
@@ -101,7 +102,12 @@ public class GameView extends View
         bricks = new BrickCollection(canvasW,canvasH);
         paddle = new Paddle(canvasW,canvasH);
         ball = new Ball(canvasW,canvasH);
-        temp = paddle.leftUpCornerX;
+        brick = new Brick();
+
+        bricks.setCanH(canvasH);
+        bricks.setCanW(canvasW);
+
+
 // =================================================//
 // ========= draw the bricks  ==================== //
         bricks.drawBricks(canvas);
@@ -113,15 +119,17 @@ public class GameView extends View
         pen.setColor(Color.BLUE);//draw Paddle
         canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 // =============================================================================================================================================//// ================== make the ball move ========================================================//
-   //   ball.bouncingBall(canvas,canMove,ballInposition);
 
     if(canMove )// the player click to start the game
         {
                 movePaddle();
                 moveBall(canvas);
 
-                
+            if(bricks.hitTheBrick(ball.getX(),ball.getY(),canvas))
+            {
+                signY *= -1;
 
+            }
             if(ball.getY() == 200.0)
                {
                     Toast.makeText(getContext(), "hit up",
@@ -254,7 +262,6 @@ public class GameView extends View
         screenY = event.getY();
         return true;
     }
-
 
 
 }

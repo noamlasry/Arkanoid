@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -63,10 +64,13 @@ public class BrickCollection
             endPositionX = SIZE_X;
             startPositionY += (SIZE_Y + INTEVAL);
             endPositionY += (SIZE_Y + INTEVAL);
-
         }
-
     }
+    public void setCanW(float canW) { this.canW = canW; }
+    public void setCanH(float canw) { this.canH = canH; }
+    public float getCanW() { return this.canW; }
+    public float getCanH() {return this.canH; }
+
     public void drawBricks(Canvas canvas)
     {
         pen.setColor(Color.GREEN);
@@ -75,9 +79,6 @@ public class BrickCollection
         canvas.drawText("Score: 0",50,100,pen);
         canvas.drawText("Lives: 0",canW - 200,100,pen);
 
-
-
-        pen.setColor(Color.GREEN);
         for(int i = 0; i<ROW; i++)//draw bricks
         {
             for(int j = 0; j<COL; j++)
@@ -86,14 +87,42 @@ public class BrickCollection
                 leftUpCornerY = bricks[i][j].leftUpCornerY;
                 rightDownCornerX = bricks[i][j].rightDownCornerX;
                 rightDownCornerY = bricks[i][j].rightDownCornerY;
-                Log.v("cordinate","leftUpCornerX: "+leftUpCornerX);
-                Log.v("cordinate","leftUpCornerY: "+leftUpCornerY);
-                Log.v("cordinate","rightDownCornerX: "+rightDownCornerX);
-                Log.v("cordinate","rightDownCornerY:=========== "+rightDownCornerY);
-
+                if(bricks[i][j].brickAlive == false)
+                    pen.setColor(Color.GRAY);
+                else
+                    pen.setColor(Color.GREEN);
                 canvas.drawRect(leftUpCornerX , leftUpCornerY , rightDownCornerX ,rightDownCornerY , pen);
             }
         }
+
+    }
+    public boolean hitTheBrick(float x , float y, Canvas canvas )
+    {
+
+        for(int i = 0; i<ROW; i++)//draw bricks
+        {
+            for(int j = 0; j<COL; j++)
+            {
+                leftUpCornerX = bricks[i][j].leftUpCornerX;
+                leftUpCornerY = bricks[i][j].leftUpCornerY;
+                rightDownCornerX = bricks[i][j].rightDownCornerX;
+                rightDownCornerY = bricks[i][j].rightDownCornerY;
+
+                if(x > leftUpCornerX && x < rightDownCornerX && y > leftUpCornerY && y < rightDownCornerY )
+                {
+                    Log.v("hit","hit brick i:"+i+"j: "+j);
+
+                    bricks[i][j].brickAlive = false;
+                    pen.setColor(Color.GRAY);
+                    canvas.drawRect(leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY,pen);
+                    return true;
+
+                }
+
+            }
+        }
+
+        return false;
 
     }
 
