@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -45,7 +46,7 @@ public class GameView extends View
     private Handler handler;
     boolean boolArray[][] = new boolean[ROW][COL];
     boolean stopBall = false,temp =true;
-    int count = 0,count2 = 0;
+    MainActivity mainActivity  = new MainActivity();
 
 
 
@@ -59,14 +60,23 @@ public class GameView extends View
         handler = new Handler();
         randomDirectionBall();
 
+
     }
 
     protected void onDraw( Canvas canvas)
     {
         super.onDraw(canvas);
         canvas.drawColor(Color.GRAY);
+        if(lives == 0)// the player lost the game
+        {
+            Toast.makeText(getContext(), "you lost!!",Toast.LENGTH_LONG).show();
+            initGame(canvas);
+
+        }
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
+
+
         // ========== create the necessary objects ============//
         bricks = new BrickCollection(canvasW,canvasH);
         paddle = new Paddle(canvasW,canvasH);
@@ -111,17 +121,25 @@ public class GameView extends View
 
         if(canMove )// the player click to start the game
         {
+
             pen.setColor(Color.GRAY);
             canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
 
             movePaddle();
             moveBall(canvas);
 
+            if(breakAllBrick())// finish the game , win!
+            {
+                Toast.makeText(getContext(), "you win!!",Toast.LENGTH_LONG).show();
+                initGame(canvas);
+            }
+
 
             if(hitTheBrick(ball.getX(),ball.getY(),canvas))
             {
                 signY *= -1;
                 score +=5*lives;
+                mainActivity.activeMusic();
                 canvas.drawText("Score: "+score,50,100,pen);
             }
             if(ball.getY() == 200.0)
@@ -174,8 +192,8 @@ public class GameView extends View
     {
         canMove = false;
         screenTouch = false;
-        plusX = 0;
-        plusY = 0;
+        plusX =  plusY = 0;
+        xUp = xDown = 0;
         lives--;
         canvas.drawText("Lives: "+lives,canvasW - 200,100,pen);
     }
@@ -320,5 +338,45 @@ public class GameView extends View
             signX = -1;
         else if(SIGN == 2)
             signX = 0;
+    }
+    public boolean breakAllBrick()
+    {
+        for(int i = 0; i<ROW; i++)//draw bricks
+        {
+            for(int j = 0; j<COL; j++)
+            {
+                if(boolArray[i][j] == false)
+                   return false;
+            }
+        }
+        return true;
+    }
+    public void initGame(Canvas canvas)
+    {
+        canMove = false;
+        screenTouch = false;
+        plusX = 0;
+        plusY = 0;
+        score = lives = 0;
+        lives = 3;
+
+        pen.setColor(Color.GREEN);
+        pen.setTextSize(50);
+        canvas.drawText("Score: "+score,50,100,pen);
+        canvas.drawText("Lives: "+lives,canvasW - 200,100,pen);
+
+        for(int i = 0; i<ROW; i++)//draw bricks
+        {
+            for(int j = 0; j<COL; j++)
+            {
+                boolArray[i][j] = false;// set back the array to false to daw back the bricks in Green
+
+                leftUpCornerX = bricks.bricks[i][j].leftUpCornerX;
+                leftUpCornerY = bricks.bricks[i][j].leftUpCornerY;
+                rightDownCornerX = bricks.bricks[i][j].rightDownCornerX;
+                rightDownCornerY = bricks.bricks[i][j].rightDownCornerY;
+                canvas.drawRect(leftUpCornerX , leftUpCornerY , rightDownCornerX ,rightDownCornerY , pen);
+            }
+        }
     }
 }
