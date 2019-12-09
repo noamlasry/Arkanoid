@@ -76,7 +76,6 @@ public class GameView extends View
         bricks.setCanH(canvasH);
         bricks.setCanW(canvasW);
 
-        Log.d("inside onDraw ","ball.getX(): "+ball.getX()+"ball.getY(): "+ball.getY());
 // =================================================//
 
 
@@ -109,16 +108,9 @@ public class GameView extends View
         pen.setColor(Color.BLUE);//draw Paddle
         canvas.drawRect(paddle.leftUpCornerX + xUp,paddle.leftUpCornerY,paddle.rightDownCornerX + xDown,paddle.rightDownCornerY,pen);
 // =============================================================================================================================================//// ================== make the ball move ========================================================//
-        Log.d("inside ","outSide==: "+canMove);
+
         if(canMove )// the player click to start the game
         {
-
-            count--;
-            Log.d("inside ","indise============: "+count);
-           // String str = String.valueOf(count);
-          // Toast.makeText(getContext(), "miss paddle: "+str,
-                    //Toast.LENGTH_LONG).show();
-
             pen.setColor(Color.GRAY);
             canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
 
@@ -129,20 +121,17 @@ public class GameView extends View
             if(hitTheBrick(ball.getX(),ball.getY(),canvas))
             {
                 signY *= -1;
-
+                score +=5*lives;
+                canvas.drawText("Score: "+score,50,100,pen);
             }
             if(ball.getY() == 200.0)
             {
-                Toast.makeText(getContext(), "hit up",
-                        Toast.LENGTH_LONG).show();
                 signY = 1;
                 invalidate();
             }
             // ========== hit the left side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown - ((paddle.paddleSize/2) - 50) )
             {
-                Toast.makeText(getContext(), "hit left side of the paddle",
-                        Toast.LENGTH_LONG).show();
                 signY = -1;
                 signX = -1;
                 invalidate();
@@ -150,8 +139,6 @@ public class GameView extends View
             // ========== hit the right side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+(paddle.paddleSize/2) +50 && ball.getX() < paddle.rightDownCornerX+xDown)
             {
-                Toast.makeText(getContext(), "hit right side of the paddle",
-                        Toast.LENGTH_LONG).show();
                 signY = -1;
                 signX = 1;
                 invalidate();
@@ -159,36 +146,24 @@ public class GameView extends View
             // ========== hit the middle side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
             {
-                Toast.makeText(getContext(), "hit middle paddle",
-                        Toast.LENGTH_LONG).show();
                 signY = -1;
                 invalidate();
             }
 
             if(ball.getX() < 3.0)
             {
-                Toast.makeText(getContext(), "hit left wall",
-                        Toast.LENGTH_LONG).show();
                 signX *= -1;
             }
             //======= hit the right wall ==============//
             if(ball.getX() > canvasW - 3)
             {
-                Toast.makeText(getContext(), "hit right wall",
-                        Toast.LENGTH_LONG).show();
                 signX *= -1;
             }
             //======== the ball miss the paddle ===============//
             if((ball.getX() < paddle.getLeftUpCornerX() || ball.getX() > paddle.getRightDownCornerX() )&& ball.getY() > paddle.getRightDownCornerY() +3 )
             {
-                canMove = false;
-                screenTouch = false;
-                plusX = 0;
-                plusY = 0;
-
                 lostLives(canvas);
             }
-
         }
         // ===================   make the paddle move by the motion sensor  ============================//
 // ==================================================================================================//
@@ -197,12 +172,12 @@ public class GameView extends View
     }
     public void lostLives(Canvas canvas)
     {
+        canMove = false;
+        screenTouch = false;
+        plusX = 0;
+        plusY = 0;
         lives--;
         canvas.drawText("Lives: "+lives,canvasW - 200,100,pen);
-     //   screenTouch = false;
-    //    pen.setColor(Color.WHITE);// draw ball
-     //   canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
-
     }
 
     public void moveBall(Canvas canvas)
