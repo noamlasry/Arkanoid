@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
-
 import java.util.Random;
 
 public class GameView extends View
@@ -26,10 +25,13 @@ public class GameView extends View
     Ball ball = null;
     Brick brick = null;
     float xUp = 0,xDown = 0;
-    float paddleSpeed = (float) 13,ballSpeed = (float) 6;
-    int plusX = 0, plusY = 0,signX = -1,lives = 3,score = 0,signY = -1,x,SIGN;
+    final float paddleSpeed = (float) 10,ballSpeed = (float) 6;
+    int plusX = 0, plusY = 0,x,y,SIGN;
+    int signX = -1,signY = -1;
+    int lives = 3,score = 0;
     private Handler handler;
     boolean boolArray[][] = new boolean[ROW][COL];
+    boolean stopBall = false,temp =true;
     MainActivity mainActivity  = new MainActivity();
 
     public GameView(Context context, @Nullable AttributeSet attrs)
@@ -41,7 +43,6 @@ public class GameView extends View
         pen.setTextSize(50);
         handler = new Handler();
         randomDirectionBall();
-        randomSpeedBall();
     }
 
     protected void onDraw( Canvas canvas)
@@ -52,10 +53,10 @@ public class GameView extends View
         {
             Toast.makeText(getContext(), "you lost!!",Toast.LENGTH_LONG).show();
             initGame(canvas);
+
         }
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
-
 
 // ========== create the necessary objects ============//
         bricks = new BrickCollection(canvasW,canvasH);
@@ -68,20 +69,19 @@ public class GameView extends View
         if(screenTouch)// once the player touch the screen the game will began.
         {
             canMove = true;
+            stopBall = false;
             pen.setColor(Color.GRAY);
             canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);
-
         }
 
 // ========= draw the bricks  ==================== //
         drawBricks(canvas);
 // ===============================================//
 // ======== draw the ball =======================//
-
         ball.setX(canvasW/2);
         ball.setY(canvasH-90);
         pen.setColor(Color.WHITE);
-        canvas.drawCircle(paddle.leftUpCornerX+paddle.paddleSize/2,canvasH-95,15,pen);
+        canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
 
 // =============================================//
 // ======== draw the paddle and active according the sensor ==================================================================================//
@@ -93,7 +93,7 @@ public class GameView extends View
         {
 
             pen.setColor(Color.GRAY);
-            canvas.drawCircle(paddle.leftUpCornerX+paddle.paddleSize/2,canvasH-95,15,pen);
+            canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
 
             movePaddle();
             moveBall(canvas);
@@ -104,7 +104,7 @@ public class GameView extends View
                 initGame(canvas);
             }
 
-
+            //=========== hit one of the brick================//
             if(hitTheBrick(ball.getX(),ball.getY(),canvas))
             {
                 signY *= -1;
@@ -112,7 +112,7 @@ public class GameView extends View
                 mainActivity.activeMusic();
                 canvas.drawText("Score: "+score,50,100,pen);
             }
-            //===== hit the celling ========//
+            //=========== hit the ceiling ======================//
             if(ball.getY() == 120.0)
                 signY = 1;
 
@@ -131,7 +131,8 @@ public class GameView extends View
             // ========== hit the middle side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
                 signY = -1;
-            //======= hit the right wall ==============//
+
+            //============= hit the left wall ========================//
             if(ball.getX() < 3.0)
                 signX *= -1;
 
@@ -152,13 +153,29 @@ public class GameView extends View
     public void lostLives(Canvas canvas)
     {
         randomDirectionBall();
-        randomSpeedBall();
         canMove = false;
         screenTouch = false;
         plusX =  plusY = 0;
         xUp = xDown = 0;
+        signY *= -1;
         lives--;
         canvas.drawText("Lives: "+lives,canvasW - 200,100,pen);
+    }
+
+    public void randomDirectionBall()
+    {
+        int min = 6,max = 9;
+        Random rand = new Random();
+        x = rand.nextInt((max - min) + 1) + min;
+        y = rand.nextInt((max - min) + 1) + min;
+
+        SIGN = rand.nextInt(3);
+        if(SIGN == 0)
+            signX = 1;
+        else if(SIGN == 1)
+            signX = -1;
+        else if(SIGN == 2)
+            signX = 1;
     }
 
     public void moveBall(Canvas canvas)
@@ -235,14 +252,15 @@ public class GameView extends View
         return false;
 
     }
-    //======== set the width and the height of the canvas ==============//
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
         super.onSizeChanged(w, h, oldw, oldh);
+
         canvasW = w;
         canvasH = h;
+
     }
-    // ======= moving the paddle by the sensor =========///
+
     public void movePaddle(int val)
     {
 
@@ -265,6 +283,8 @@ public class GameView extends View
         }
 
     }
+
+
     public void movePaddle()
     {
         if(leftMovePaddle && paddle.leftUpCornerX + xDown > 0)
@@ -286,25 +306,7 @@ public class GameView extends View
 
         }
     }
-    //======================================================
 
-    public void randomSpeedBall()
-    {
-        int min = 8,max = 13;
-        Random rand = new Random();
-        ballSpeed = rand.nextInt((max - min) + 1) + min;
-    }
-    public void randomDirectionBall()
-    {
-        Random rand = new Random();
-        SIGN = rand.nextInt(3);
-        if(SIGN == 0)
-            signX = 1;
-        else if(SIGN == 1)
-            signX = 1;
-        else if(SIGN == 2)
-            signX = -1;
-    }
     public boolean breakAllBrick()
     {
         for(int i = 0; i<ROW; i++)//draw bricks
