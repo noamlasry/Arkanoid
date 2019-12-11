@@ -1,29 +1,17 @@
 package com.noamls_amirbs.ex2;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
-import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
-import java.io.File;
-import java.io.OutputStream;
 import java.util.Random;
 
 public class GameView extends View
@@ -38,7 +26,7 @@ public class GameView extends View
     Ball ball = null;
     Brick brick = null;
     float xUp = 0,xDown = 0;
-    final float paddleSpeed = (float) 13,ballSpeed = (float) 2.5;
+    float paddleSpeed = (float) 13,ballSpeed = (float) 6;
     int plusX = 0, plusY = 0,signX = -1,lives = 3,score = 0,signY = -1,x,SIGN;
     private Handler handler;
     boolean boolArray[][] = new boolean[ROW][COL];
@@ -52,6 +40,8 @@ public class GameView extends View
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
         handler = new Handler();
+        randomDirectionBall();
+        randomSpeedBall();
     }
 
     protected void onDraw( Canvas canvas)
@@ -91,7 +81,7 @@ public class GameView extends View
         ball.setX(canvasW/2);
         ball.setY(canvasH-90);
         pen.setColor(Color.WHITE);
-        canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
+        canvas.drawCircle(paddle.leftUpCornerX+paddle.paddleSize/2,canvasH-95,15,pen);
 
 // =============================================//
 // ======== draw the paddle and active according the sensor ==================================================================================//
@@ -103,7 +93,7 @@ public class GameView extends View
         {
 
             pen.setColor(Color.GRAY);
-            canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
+            canvas.drawCircle(paddle.leftUpCornerX+paddle.paddleSize/2,canvasH-95,15,pen);
 
             movePaddle();
             moveBall(canvas);
@@ -141,7 +131,7 @@ public class GameView extends View
             // ========== hit the middle side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
                 signY = -1;
-
+            //======= hit the right wall ==============//
             if(ball.getX() < 3.0)
                 signX *= -1;
 
@@ -300,9 +290,9 @@ public class GameView extends View
 
     public void randomSpeedBall()
     {
-        int min = 4,max = 12;
+        int min = 8,max = 13;
         Random rand = new Random();
-        x = rand.nextInt((max - min) + 1) + min;
+        ballSpeed = rand.nextInt((max - min) + 1) + min;
     }
     public void randomDirectionBall()
     {
@@ -311,9 +301,9 @@ public class GameView extends View
         if(SIGN == 0)
             signX = 1;
         else if(SIGN == 1)
-            signX = -1;
+            signX = 1;
         else if(SIGN == 2)
-            signX = 0;
+            signX = -1;
     }
     public boolean breakAllBrick()
     {
