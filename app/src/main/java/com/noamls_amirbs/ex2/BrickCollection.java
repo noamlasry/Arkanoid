@@ -17,16 +17,14 @@ import java.text.AttributedCharacterIterator;
 public class BrickCollection
 {
 
-
     float canW,canH;
     final int ROW = 5,COL = 7,INTEVAL = 3;
     float startPositionX = 0,startPositionY = 200,endPositionX,endPositionY = 240;
-
+    float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
     float SIZE_X, SIZE_Y = 40;
     private Paint pen;
 
     Brick bricks[][] = null;
-
 
 
     public BrickCollection(float canW, float canH)
@@ -66,12 +64,5 @@ public class BrickCollection
             endPositionY += (SIZE_Y + INTEVAL);
         }
     }
-    public void setCanW(float canW) { this.canW = canW; }
-    public void setCanH(float canw) { this.canH = canH; }
-    public float getCanW() { return this.canW; }
-    public float getCanH() {return this.canH; }
-
-
-
 
 }

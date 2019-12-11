@@ -29,8 +29,7 @@ import java.util.Random;
 public class GameView extends View
 {
     float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
-    boolean leftMovePaddle = false,rightMovePaddle = false,stop = false,screenTouch = false, canMove = false,ballInposition = true;
-    boolean beforeMoveBall = false;
+    boolean leftMovePaddle = false,rightMovePaddle = false,stop = false,screenTouch = false, canMove = false;
     final int ROW = 5,COL = 7;
     private Paint pen;
     protected float canvasW, canvasH;
@@ -38,17 +37,12 @@ public class GameView extends View
     BrickCollection bricks = null;
     Ball ball = null;
     Brick brick = null;
-    float xUp = 0,xDown = 0,screenX,screenY;
-    final float paddleSpeed = (float) 10,ballSpeed = (float) 2.5;
-    int plusX = 0, plusY = 0,x,y,SIGN;
-    int signX = -1,signY = -1;
-    int lives = 3,score = 0;
+    float xUp = 0,xDown = 0;
+    final float paddleSpeed = (float) 13,ballSpeed = (float) 2.5;
+    int plusX = 0, plusY = 0,signX = -1,lives = 3,score = 0,signY = -1,x,SIGN;
     private Handler handler;
     boolean boolArray[][] = new boolean[ROW][COL];
-    boolean stopBall = false,temp =true;
     MainActivity mainActivity  = new MainActivity();
-
-
 
     public GameView(Context context, @Nullable AttributeSet attrs)
     {
@@ -58,9 +52,6 @@ public class GameView extends View
         pen.setStrokeWidth(2);
         pen.setTextSize(50);
         handler = new Handler();
-        randomDirectionBall();
-
-
     }
 
     protected void onDraw( Canvas canvas)
@@ -71,35 +62,26 @@ public class GameView extends View
         {
             Toast.makeText(getContext(), "you lost!!",Toast.LENGTH_LONG).show();
             initGame(canvas);
-
         }
         pen.setColor(Color.BLUE);
         pen.setTextSize(80);
 
 
-        // ========== create the necessary objects ============//
+// ========== create the necessary objects ============//
         bricks = new BrickCollection(canvasW,canvasH);
         paddle = new Paddle(canvasW,canvasH);
         ball = new Ball(canvasW,canvasH);
         brick = new Brick();
-
-        bricks.setCanH(canvasH);
-        bricks.setCanW(canvasW);
-
 // =================================================//
-
-
-        canMove =false;
 
         canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);// first draw on the canvas
         if(screenTouch)// once the player touch the screen the game will began.
         {
             canMove = true;
-            stopBall = false;
             pen.setColor(Color.GRAY);
             canvas.drawText("Click to Play!",canvasW /2-200,canvasH/2+70,pen);
-        }
 
+        }
 
 // ========= draw the bricks  ==================== //
         drawBricks(canvas);
@@ -110,8 +92,6 @@ public class GameView extends View
         ball.setY(canvasH-90);
         pen.setColor(Color.WHITE);
         canvas.drawCircle(canvasW/2,canvasH-95,15,pen);
-
-        beforeMoveBall = true;
 
 // =============================================//
 // ======== draw the paddle and active according the sensor ==================================================================================//
@@ -142,46 +122,37 @@ public class GameView extends View
                 mainActivity.activeMusic();
                 canvas.drawText("Score: "+score,50,100,pen);
             }
-            if(ball.getY() == 200.0)
-            {
+            //===== hit the celling ========//
+            if(ball.getY() == 120.0)
                 signY = 1;
-                invalidate();
-            }
+
             // ========== hit the left side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp && ball.getX() < paddle.rightDownCornerX+xDown - ((paddle.paddleSize/2) - 50) )
             {
                 signY = -1;
                 signX = -1;
-                invalidate();
             }
             // ========== hit the right side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+(paddle.paddleSize/2) +50 && ball.getX() < paddle.rightDownCornerX+xDown)
             {
                 signY = -1;
                 signX = 1;
-                invalidate();
             }
             // ========== hit the middle side of the paddle ========== //
             if(ball.getY() == paddle.getLeftUpCornerY() && ball.getX() > paddle.getLeftUpCornerX() +xUp+paddle.paddleSize -50 && ball.getX() < paddle.rightDownCornerX+xDown -paddle.paddleSize +50)
-            {
                 signY = -1;
-                invalidate();
-            }
 
             if(ball.getX() < 3.0)
-            {
                 signX *= -1;
-            }
+
             //======= hit the right wall ==============//
             if(ball.getX() > canvasW - 3)
-            {
                 signX *= -1;
-            }
+
             //======== the ball miss the paddle ===============//
             if((ball.getX() < paddle.getLeftUpCornerX() || ball.getX() > paddle.getRightDownCornerX() )&& ball.getY() > paddle.getRightDownCornerY() +3 )
-            {
                 lostLives(canvas);
-            }
+
         }
         // ===================   make the paddle move by the motion sensor  ============================//
 // ==================================================================================================//
@@ -190,6 +161,8 @@ public class GameView extends View
     }
     public void lostLives(Canvas canvas)
     {
+        randomDirectionBall();
+        randomSpeedBall();
         canMove = false;
         screenTouch = false;
         plusX =  plusY = 0;
@@ -272,15 +245,14 @@ public class GameView extends View
         return false;
 
     }
+    //======== set the width and the height of the canvas ==============//
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
     {
         super.onSizeChanged(w, h, oldw, oldh);
-
         canvasW = w;
         canvasH = h;
-
     }
-
+    // ======= moving the paddle by the sensor =========///
     public void movePaddle(int val)
     {
 
@@ -303,8 +275,6 @@ public class GameView extends View
         }
 
     }
-
-
     public void movePaddle()
     {
         if(leftMovePaddle && paddle.leftUpCornerX + xDown > 0)
@@ -326,11 +296,17 @@ public class GameView extends View
 
         }
     }
+    //======================================================
+
+    public void randomSpeedBall()
+    {
+        int min = 4,max = 12;
+        Random rand = new Random();
+        x = rand.nextInt((max - min) + 1) + min;
+    }
     public void randomDirectionBall()
     {
         Random rand = new Random();
-        x = rand.nextInt(10);
-        y = rand.nextInt(6);
         SIGN = rand.nextInt(3);
         if(SIGN == 0)
             signX = 1;

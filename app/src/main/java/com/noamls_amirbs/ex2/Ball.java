@@ -20,7 +20,7 @@ public class Ball
         this.canH = canH;
 
         this.ballFirstPositionX = canW/2;
-        this.ballFirstPositionY = canH/2;
+        this.ballFirstPositionY = canH-95;
         this.x = canW/2;
         this.y = canH - 95;
         this.radius = 15;
