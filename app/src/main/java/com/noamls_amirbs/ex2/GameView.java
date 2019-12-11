@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import java.util.Random;
 
-public class GameView extends View
+public class GameView extends View implements  Runnable
 {
     float leftUpCornerX,leftUpCornerY,rightDownCornerX,rightDownCornerY;
     boolean leftMovePaddle = false,rightMovePaddle = false,stop = false,screenTouch = false, canMove = false;
@@ -49,6 +49,7 @@ public class GameView extends View
     {
         super.onDraw(canvas);
         canvas.drawColor(Color.GRAY);
+        Log.d("speedBall","in ondraw");
         if(lives == 0)// the player lost the game
         {
             Toast.makeText(getContext(), "you lost!!",Toast.LENGTH_LONG).show();
@@ -147,7 +148,6 @@ public class GameView extends View
         }
         // ===================   make the paddle move by the motion sensor  ============================//
 // ==================================================================================================//
-
         invalidate();
     }
     public void lostLives(Canvas canvas)
@@ -346,5 +346,10 @@ public class GameView extends View
                 canvas.drawRect(leftUpCornerX , leftUpCornerY , rightDownCornerX ,rightDownCornerY , pen);
             }
         }
+    }
+
+    @Override
+    public void run() {
+        invalidate();
     }
 }
